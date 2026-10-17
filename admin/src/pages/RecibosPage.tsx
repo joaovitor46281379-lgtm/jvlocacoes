@@ -15,7 +15,7 @@ import { formatarData, formatarValor } from '@shared/lib/validations'
 import { ReciboTermico } from '@/components/ReciboTermico'
 import { DocumentoInput, type TipoDocumento } from '@/components/DocumentoInput'
 
-type ModoImpressao = 'a4' | 'termico'
+type ModoImpressao = 'termico'
 
 // ─── Conversão de valor por extenso ───────────────────────────────────────────
 
@@ -249,10 +249,6 @@ export function RecibosPage() {
             )}
             {gerandoPdf ? 'Gerando...' : 'Baixar PDF'}
           </Button>
-          <Button variant="outline" onClick={() => handleImprimir('a4')}>
-            <Printer className="h-4 w-4 mr-2" />
-            Imprimir A4
-          </Button>
           <Button onClick={() => handleImprimir('termico')}>
             <Printer className="h-4 w-4 mr-2" />
             Imprimir Térmico
@@ -263,23 +259,6 @@ export function RecibosPage() {
       {/* ── RECIBO (visível na tela e no print) ── */}
       {selectedPedido && (
         <>
-          {/* Estilo A4 só vale quando não estiver imprimindo no térmico (@page conflitaria) */}
-          {printMode !== 'termico' && (
-            <style>{`
-              @media print {
-                body * { visibility: hidden !important; }
-                .recibo-doc, .recibo-doc * { visibility: visible !important; }
-                .recibo-doc {
-                  position: fixed; top: 0; left: 0; width: 100%;
-                  max-width: none !important; margin: 0 !important; padding: 0 !important;
-                  box-shadow: none !important; border-radius: 0 !important; background: #fff !important;
-                }
-                .no-print { display: none !important; }
-              }
-              @page { size: A4; margin: 15mm 20mm; }
-            `}</style>
-          )}
-
           {printMode === 'termico' && (
             <ReciboTermico
               numero={selectedPedido.id.substring(0, 8).toUpperCase()}

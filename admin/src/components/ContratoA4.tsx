@@ -22,15 +22,8 @@ export function ContratoA4({ pedido, perdas, cpfLocatario, tipoDocLocatario = 'C
 
   return (
     <div className="contrato-a4">
-      {/* Estilos de impressão */}
+      {/* Estilos (usado só para gerar o PDF) */}
       <style>{`
-        @page { size: A4; margin: 15mm 20mm; }
-        @media print {
-          .no-print { display: none !important; }
-          .contrato-a4 h3 { break-after: avoid; page-break-after: avoid; }
-          .contrato-a4 .linha, .contrato-a4 .clausula, .contrato-a4 .danos-item,
-          .contrato-a4 .assinaturas, .contrato-a4 .assinatura-bloco { break-inside: avoid; page-break-inside: avoid; }
-        }
         .contrato-a4 {
           font-family: 'Times New Roman', Times, serif;
           font-size: 12pt;

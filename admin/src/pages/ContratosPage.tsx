@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { createPortal } from 'react-dom'
 import { usePedidos } from '@shared/hooks/use-pedidos'
 import { usePerdasQuebrasPorPedido } from '@shared/hooks/use-perdas-quebras'
 import { useConfiguracoes } from '@shared/hooks/use-configuracoes'
@@ -24,7 +23,7 @@ import { ContratoA4 } from '@/components/ContratoA4'
 import { ContratoTermico } from '@/components/ContratoTermico'
 import { DocumentoInput, type TipoDocumento } from '@/components/DocumentoInput'
 
-type ModoImpressao = 'a4' | 'termico'
+type ModoImpressao = 'termico'
 
 export function ContratosPage() {
   const [selectedPedidoId, setSelectedPedidoId] = useState('')
@@ -249,10 +248,6 @@ Documento gerado em: ${formatarData(new Date())}
                 {gerandoPdf ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileDown className="h-4 w-4 mr-2" />}
                 {gerandoPdf ? 'Gerando...' : 'Baixar PDF'}
               </Button>
-              <Button variant="outline" onClick={() => handleImprimir('a4')} className="flex-1 sm:flex-none">
-                <Printer className="h-4 w-4 mr-2" />
-                Imprimir A4
-              </Button>
               <Button onClick={() => handleImprimir('termico')} className="flex-1 sm:flex-none">
                 <Printer className="h-4 w-4 mr-2" />
                 Imprimir Térmico
@@ -327,20 +322,6 @@ Documento gerado em: ${formatarData(new Date())}
       )}
 
       {/* Componentes de impressão — ficam ocultos na tela, visíveis só no print */}
-      {pedidoMapeado && printMode === 'a4' &&
-        createPortal(
-          <div className="print-a4-root">
-            <ContratoA4
-              pedido={pedidoMapeado as any}
-              perdas={perdasLista as any}
-              cpfLocatario={cpfLocatario || undefined}
-              tipoDocLocatario={tipoDocLocatario}
-              cpfLocador={cpfLocador || undefined}
-              nomeLocador={nomeLocador || undefined}
-            />
-          </div>,
-          document.body
-        )}
       {pedidoMapeado && printMode === 'termico' && (
         <div ref={printRef} className="hidden print:block">
           <ContratoTermico
