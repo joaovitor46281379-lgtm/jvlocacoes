@@ -24,21 +24,22 @@ export function ContratoA4({ pedido, perdas, cpfLocatario, tipoDocLocatario = 'C
     <div className="contrato-a4">
       {/* Estilos de impressão */}
       <style>{`
+        @page { size: A4; margin: 15mm 20mm; }
         @media print {
-          body * { visibility: hidden !important; }
-          .contrato-a4, .contrato-a4 * { visibility: visible !important; }
-          .contrato-a4 { position: fixed; top: 0; left: 0; width: 100%; }
           .no-print { display: none !important; }
+          .contrato-a4 h3 { break-after: avoid; page-break-after: avoid; }
+          .contrato-a4 .linha, .contrato-a4 .clausula, .contrato-a4 .danos-item,
+          .contrato-a4 .assinaturas, .contrato-a4 .assinatura-bloco { break-inside: avoid; page-break-inside: avoid; }
         }
-        @page { size: A4; margin: 20mm; }
         .contrato-a4 {
           font-family: 'Times New Roman', Times, serif;
           font-size: 12pt;
           line-height: 1.6;
           color: #000;
-          max-width: 170mm;
-          margin: 0 auto;
-          padding: 10mm;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
           background: white;
         }
         .contrato-a4 h1 { font-size: 14pt; text-align: center; text-transform: uppercase; margin-bottom: 4pt; }
@@ -49,7 +50,7 @@ export function ContratoA4({ pedido, perdas, cpfLocatario, tipoDocLocatario = 'C
         .contrato-a4 .assinaturas { margin-top: 32pt; display: flex; justify-content: space-between; gap: 20mm; }
         .contrato-a4 .assinatura-bloco { flex: 1; text-align: center; }
         .contrato-a4 .linha-assinatura { border-top: 1px solid #000; margin-bottom: 4pt; }
-        .contrato-a4 .danos-item { border: 1px solid #ccc; padding: 6pt; margin-bottom: 4pt; }
+        .contrato-a4 .danos-item { border: 1px solid #ccc; padding: 6pt; margin-bottom: 4pt; box-sizing: border-box; }
         .contrato-a4 .divider { border-top: 1px solid #000; margin: 12pt 0; }
         .contrato-a4 .logo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8pt; }
         .contrato-a4 .data-local { text-align: right; margin: 24pt 0 8pt; font-style: italic; }

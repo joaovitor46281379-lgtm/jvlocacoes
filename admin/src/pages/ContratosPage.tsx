@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { usePedidos } from '@shared/hooks/use-pedidos'
 import { usePerdasQuebrasPorPedido } from '@shared/hooks/use-perdas-quebras'
 import { useConfiguracoes } from '@shared/hooks/use-configuracoes'
@@ -326,18 +327,20 @@ Documento gerado em: ${formatarData(new Date())}
       )}
 
       {/* Componentes de impressão — ficam ocultos na tela, visíveis só no print */}
-      {pedidoMapeado && printMode === 'a4' && (
-        <div ref={printRef} className="hidden print:block">
-          <ContratoA4
-            pedido={pedidoMapeado as any}
-            perdas={perdasLista as any}
-            cpfLocatario={cpfLocatario || undefined}
-            tipoDocLocatario={tipoDocLocatario}
-            cpfLocador={cpfLocador || undefined}
-            nomeLocador={nomeLocador || undefined}
-          />
-        </div>
-      )}
+      {pedidoMapeado && printMode === 'a4' &&
+        createPortal(
+          <div className="print-a4-root">
+            <ContratoA4
+              pedido={pedidoMapeado as any}
+              perdas={perdasLista as any}
+              cpfLocatario={cpfLocatario || undefined}
+              tipoDocLocatario={tipoDocLocatario}
+              cpfLocador={cpfLocador || undefined}
+              nomeLocador={nomeLocador || undefined}
+            />
+          </div>,
+          document.body
+        )}
       {pedidoMapeado && printMode === 'termico' && (
         <div ref={printRef} className="hidden print:block">
           <ContratoTermico
@@ -353,8 +356,8 @@ Documento gerado em: ${formatarData(new Date())}
 
       {/* Contrato A4 renderizado fora da tela, usado apenas para gerar o PDF */}
       {pedidoMapeado && gerandoPdf && (
-        <div style={{ position: 'fixed', left: -10000, top: 0, width: 794, background: '#fff' }} aria-hidden="true">
-          <div ref={pdfRef} style={{ width: 794, background: '#fff' }}>
+        <div style={{ position: 'fixed', left: -10000, top: 0, width: 642, background: '#fff' }} aria-hidden="true">
+          <div ref={pdfRef} style={{ width: 642, background: '#fff' }}>
             <ContratoA4
               pedido={pedidoMapeado as any}
               perdas={perdasLista as any}

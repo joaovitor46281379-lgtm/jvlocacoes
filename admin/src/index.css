@@ -130,3 +130,15 @@
     font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }
+
+/* ── Impressão A4 ──
+   O documento é renderizado num portal direto no <body> (.print-a4-root).
+   Na impressão, todo o resto da tela some (display:none, sem ocupar espaço),
+   então o documento flui normalmente por quantas páginas A4 precisar. */
+.print-a4-root { display: none; }
+@media print {
+  /* só vale enquanto o portal do documento A4 está montado (não interfere no recibo/térmico) */
+  body:has(> .print-a4-root) > *:not(.print-a4-root) { display: none !important; }
+  body:has(> .print-a4-root) .print-a4-root { display: block !important; }
+  body:has(> .print-a4-root), html:has(> body > .print-a4-root) { background: #fff !important; height: auto !important; overflow: visible !important; }
+}

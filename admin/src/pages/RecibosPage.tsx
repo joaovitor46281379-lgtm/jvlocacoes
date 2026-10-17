@@ -269,10 +269,14 @@ export function RecibosPage() {
               @media print {
                 body * { visibility: hidden !important; }
                 .recibo-doc, .recibo-doc * { visibility: visible !important; }
-                .recibo-doc { position: fixed; top: 0; left: 0; width: 100%; padding: 20mm; }
+                .recibo-doc {
+                  position: fixed; top: 0; left: 0; width: 100%;
+                  max-width: none !important; margin: 0 !important; padding: 0 !important;
+                  box-shadow: none !important; border-radius: 0 !important; background: #fff !important;
+                }
                 .no-print { display: none !important; }
               }
-              @page { size: A4; margin: 20mm; }
+              @page { size: A4; margin: 15mm 20mm; }
             `}</style>
           )}
 
