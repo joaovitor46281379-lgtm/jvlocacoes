@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tabela de Kits (mesas e cadeiras)
+model Kit {
+  id        String   @id @default(uuid())
+  descricao String
+  mesas     Int
+  cadeiras  Int
+  valor     Decimal  @db.Decimal(10, 2)
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  pedidos Pedido[]
+
+  @@map("kits")
+}
+
+// Tabela de Endereços dos Usuários
+model Address {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  street       String   @map("street")
+  number       String   @map("number")
+  complement   String?  @map("complement")
+  neighborhood String   @map("neighborhood")
+  city         String   @map("city")
+  state        String   @map("state")
+  zipCode      String   @map("zip_code")
+  reference    String?  @map("reference")
+  isDefault    Boolean  @default(false) @map("is_default")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([isDefault])
+  @@map("addresses")
+}
+
+// Tabela de Vilas (bairros/localidades)
+model Vila {
+  id          String   @id @default(uuid())
+  nome        String   @unique
+  valorFrete  Decimal  @db.Decimal(10, 2) @map("valor_frete")
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  pedidos Pedido[]
+
+  @@map("vilas")
+}
+
+// Tabela de Pedidos
+model Pedido {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  nomeSolicitante  String   @map("nome_solicitante")
+  whatsapp         String
+  dataInicio       DateTime @map("data_inicio") // Data de início do período de reserva
+  dataFim          DateTime @map("data_fim")    // Data de fim do período de reserva
+  endereco         String
+  vilaId           String   @map("vila_id")
+  kitId            String   @map("kit_id")
+  quantidade       Int      // Mínimo 3 kits
+  formaPagamento   String   @map("forma_pagamento") // PIX, DINHEIRO, CARTAO
+  status           String   @default("PENDENTE") // PENDENTE, CONFIRMADO, EM_ANDAMENTO, FINALIZADO, CANCELADO
+  valorKit         Decimal  @db.Decimal(10, 2) @map("valor_kit")         // Preço do kit no momento do pedido
+  valorFrete       Decimal  @db.Decimal(10, 2) @map("valor_frete")       // Frete no momento do pedido
+  total            Decimal  @db.Decimal(10, 2)
+  observacoes      String?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  vila       Vila         @relation(fields: [vilaId], references: [id])
+  kit        Kit          @relation(fields: [kitId], references: [id])
+  pagamentos Pagamento[]
+  avaliacao  Avaliacao?
+
+  @@index([userId])
+  @@index([dataInicio])
+  @@index([dataFim])
+  @@index([status])
+  @@map("pedidos")
+}
+
+// Tabela de Categorias de Custos
+model CategoriaCusto {
+  id        String   @id @default(uuid())
+  nome      String   @unique
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  custos Custo[]
+
+  @@map("categorias_custos")
+}
+
+// Tabela de Custos
+model Custo {
+  id           String         @id @default(uuid())
+  categoriaId  String         @map("categoria_id")
+  valor        Decimal        @db.Decimal(10, 2)
+  descricao    String?
+  mes          Int            // 1-12
+  ano          Int
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  categoria CategoriaCusto @relation(fields: [categoriaId], references: [id])
+
+  @@index([mes, ano])
+  @@map("custos")
+}
+
+// Tabela de Perfil do Cliente
+model Perfil {
+  id        String   @id @default(uuid())
+  userId   String   @unique @map("user_id")
+  nome      String
+  whatsapp  String
+  cpf       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("perfis")
+}
+
+// Tabela de Inventário (mesas e cadeiras disponíveis)
+model Inventario {
+  id           String   @id @default(uuid())
+  item         String   // MESA | CADEIRA
+  quantidade   Int      @default(0)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("inventario")
+}
+
+// Tabela de Pagamentos (Mercado Pago)
+model Pagamento {
+  id              String   @id @default(uuid())
+  pedidoId        String   @map("pedido_id")
+  mpPaymentId     String?  @unique @map("mp_payment_id")
+  qrCode          String?  @map("qr_code")
+  qrCodeBase64    String?  @map("qr_code_base64") @db.Text
+  status          String   @default("PENDENTE") // PENDENTE, PAGO, CANCELADO, EXPIRADO
+  valor           Decimal  @db.Decimal(10, 2)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([pedidoId])
+  @@index([mpPaymentId])
+  @@map("pagamentos")
+}
+
+// NOTA: Tabela Disponibilidade removida - agora calculamos dinamicamente
+// baseado nas reservas (pedidos confirmados) que se sobrepõem ao período consultado
+
+// Tabela de Avaliações
+model Avaliacao {
+  id         String   @id @default(uuid())
+  pedidoId   String   @unique @map("pedido_id")
+  estrelas   Int      // 1 a 5
+  comentario String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([estrelas])
+  @@map("avaliacoes")
+}
