@@ -1,0 +1,11 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": "public",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.28.2 --activate && pnpm install",
+"rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/(.*)", "destination": "/admin/index.html" },
+    { "source": "/cliente", "destination": "/cliente/index.html" },
+    { "source": "/cliente/(.*)", "destination": "/cliente/index.html" }
+  ]
+}

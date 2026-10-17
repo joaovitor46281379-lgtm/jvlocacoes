@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.vercel.at/schema.json",
+  "tasks": {
+    "dev": {
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/"]
+    },
+    "lint": {
+      "outputs": []
+    }
+  }
+}
