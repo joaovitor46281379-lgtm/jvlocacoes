@@ -1,0 +1,18 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/types": ["../shared/types"],
+      "@shared/lib": ["../shared/lib"],
+      "@shared/components": ["../shared/components"],
+      "@shared/hooks": ["../shared/hooks"],
+      "@shared/providers": ["../shared/providers"]
+    }
+  }
+}
